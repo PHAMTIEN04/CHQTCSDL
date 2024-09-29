@@ -14,7 +14,7 @@ as
 begin
 	
 	print concat(N'Diện tích hình chữ nhật là: ',@chieudai * @chieurong)
-	print concat(N'Chu vi hình chữ nhật là: ',2*(@chieudai * @chieurong))
+	print concat(N'Chu vi hình chữ nhật là: ',2*(@chieudai + @chieurong))
 end
 
 exec hcn_dt_cv @chieudai = 10, @chieurong = 2
@@ -252,5 +252,5 @@ BEGIN
 			WHERE sv.MaSinhVien = @msv_higher
 		end
 END
-drop procedure ss_tongdiem_n
 exec ss_tongdiem_n @msv1 = N'DL01' , @msv2 = N'DL06'
+drop procedure ss_tongdiem_n
