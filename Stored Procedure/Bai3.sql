@@ -254,3 +254,112 @@ BEGIN
 END
 exec ss_tongdiem_n @msv1 = N'DL01' , @msv2 = N'DL06'
 drop procedure ss_tongdiem_n
+
+--16
+create proc proc_TK_SV_ThangSinh(@TuThang int,@DenThang int)
+as
+	begin
+		if (@TuThang > @DenThang or @TuThang < 1 or @TuThang > 12 or @DenThang < 1 or @DenThang > 12)
+			begin
+			return;
+			end
+		declare @t table(
+			thang int,
+			tong int
+			)
+		declare @i int
+		
+		set @i=@TuThang
+		while @i <= @DenThang
+			begin
+				declare @tt int 
+				select @tt = Count(*)
+				from sinhvien as s
+				where MONTH(ngaysinh) = @i
+				insert into @t(thang,tong) values(@i,@tt)
+				set @i = @i + 1
+			end
+		select *
+		from @t
+
+		
+	end
+
+exec proc_TK_SV_ThangSinh @TuThang = 3,@DenThang = 12
+drop proc proc_TK_SV_ThangSinh
+--17
+create proc proc_TK_SV_ThangSinh_Lop(@malop nvarchar(15),@TuThang int,@DenThang int)
+as
+	begin
+		if (@TuThang > @DenThang or @TuThang < 1 or @TuThang > 12 or @DenThang < 1 or @DenThang > 12)
+			begin
+			return;
+			end
+		declare @t table(
+			thang int,
+			tong int
+			)
+		declare @i int
+		
+		set @i=@TuThang
+		while @i <= @DenThang
+			begin
+				declare @tt int 
+				select @tt = Count(*)
+				from sinhvien as s
+				where MONTH(ngaysinh) = @i and MaLop = @malop
+				insert into @t(thang,tong) values(@i,@tt)
+				set @i = @i + 1
+			end
+		select *
+		from @t
+
+		
+	end
+exec proc_TK_SV_ThangSinh_Lop @malop =N'K45HDDLL' ,@TuThang = 5,@DenThang = 12
+drop proc proc_TK_SV_ThangSinh_Lop
+--18
+CREATE PROC proc_TK_SV_NgaySinh_Lop
+    @malop nvarchar(15),
+    @TuNgay date,
+    @DenNgay date
+AS
+BEGIN
+    IF (@TuNgay > @DenNgay)
+    BEGIN
+        RETURN;
+    END
+
+    DECLARE @t TABLE (
+        ngay date,
+        tong int
+    );
+
+    DECLARE @currentDate date;
+    SET @currentDate = @TuNgay;
+
+    WHILE @currentDate <= @DenNgay
+    BEGIN
+        DECLARE @tt int;
+        SELECT @tt = COUNT(*)
+        FROM sinhvien
+        WHERE ngaysinh = @currentDate AND MaLop = @malop;
+        INSERT INTO @t(ngay, tong) VALUES (@currentDate, @tt);
+
+        -- Tăng ngày hiện tại lên 1 ngày
+        SET @currentDate = DATEADD(DAY, 1, @currentDate);
+    END
+    SELECT *
+    FROM @t;
+END
+
+exec proc_TK_SV_NgaySinh_Lop @malop =N'K45HDDL' ,@TuNgay = '1994-03-10',@DenNgay = '1994-03-15'
+drop proc proc_TK_SV_NgaySinh_Lop
+
+
+
+
+--Sự khác biệt giữa COUNT(*) và các biến thể khác của COUNT:
+--COUNT(*): Đếm tất cả các hàng, bất kể các cột có chứa giá trị NULL hay không.
+
+--COUNT(column_name): Chỉ đếm những hàng mà cột column_name không có giá trị NULL.

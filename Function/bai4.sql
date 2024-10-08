@@ -22,7 +22,7 @@ begin
 	return (@n*(@n+1))/2
 end
 
-select dbo.Fn_tong(5) 
+select dbo.Fn_tong(7) 
 
 --2
 create function Fn_tong_nghich(@n int)
