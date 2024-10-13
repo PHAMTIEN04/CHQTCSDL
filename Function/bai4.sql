@@ -77,7 +77,7 @@ begin
 			where Year(ngaysinh) = @Namsinh)
 end
 
-select dbo.Fn_SV_NamSinh(1993)
+select dbo.Fn_SV_NamSinh(11993)
 
 --6
 create function Fn_SV_HoLe(@HoSV nvarchar(45))
@@ -86,7 +86,7 @@ as
 	return (select * 
 			from SINHVIEN
 			where HoDem like  @HoSV +' %' or HoDem = @HoSV)
-select * from dbo.Fn_SV_HoLe(N'Dư')
+select * from dbo.Fn_SV_HoLe(N'Lê')
 drop function Fn_SV_HoLe
 
 --7
@@ -136,7 +136,7 @@ as
 			group by l.MaLop,l.TenLop
 	)
 
-select * from dbo.Fn_TongSV_NamSinh(N'K45HDDL',default)
+select * from dbo.Fn_TongSV_NamSinh(N'K45HDDLád',default)
 drop function Fn_TongSV_NamSinh
 
 --11
@@ -206,5 +206,5 @@ drop function Fn_TongSV_Tinh
 --hàm không thể trả về một thông báo trực tiếp.
 --UNION ALL là một toán tử trong SQL được sử dụng để kết hợp kết quả của hai hoặc nhiều truy vấn SELECT. 
 --Nó trả về tất cả các hàng từ mỗi truy vấn mà không loại bỏ các bản sao, có nghĩa là nếu có các hàng giống nhau giữa các truy vấn, chúng sẽ được giữ lại trong kết quả.
---UNION: Sẽ loại bỏ các bản sao và chỉ trả về các hàng duy nhất.
---UNION ALL: Trả về tất cả các hàng, bao gồm cả các bản sao.
+--UNION ALL: Giữ tất cả các kết quả, bao gồm cả các kết quả trùng lặp.
+--UNION: Chỉ giữ các kết quả duy nhất (loại bỏ các dòng trùng lặp).
