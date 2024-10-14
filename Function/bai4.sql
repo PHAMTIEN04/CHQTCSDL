@@ -1,4 +1,4 @@
-﻿--khác với stores procedure là function có giá trị trả về
+﻿﻿--khác với stores procedure là function có giá trị trả về
 select *
 from sinhvien
 create function func_find_name(@msv nvarchar(10))
@@ -141,63 +141,94 @@ drop function Fn_TongSV_NamSinh
 
 --11
 create function Fn_TongSV_TenLop(@TenLop nvarchar(50))
-returns table
+returns @thongkesv table(
+		malop nvarchar(15),
+		tenlop nvarchar(50),
+		tong int
+)
 as
-
-	return (select l.MaLop,l.TenLop,COUNT(sv.MaSinhVien) as N'Tổng số sinh viên'
+begin
+	if not exists (select 1 from LOP where TenLop = @TenLop)
+		begin
+				insert into @thongkesv
+				select l.MaLop,l.TenLop,COUNT(sv.MaSinhVien) as N'Tổng số sinh viên'
+				from LOP l left join SINHVIEN sv
+				on l.MaLop = sv.MaLop
+				group by l.MaLop,l.TenLop	
+		end
+	else
+		begin
+				insert into @thongkesv
+				select l.MaLop,l.TenLop,COUNT(sv.MaSinhVien) as N'Tổng số sinh viên'
 				from LOP l left join SINHVIEN sv
 				on l.MaLop = sv.MaLop
 				where l.TenLop = @TenLop
 				group by l.MaLop,l.TenLop
-			union all
-			select l.MaLop,l.TenLop,COUNT(sv.MaSinhVien) as N'Tổng số sinh viên'
-				from LOP l left join SINHVIEN sv
-				on l.MaLop = sv.MaLop
-				where not exists (select 1 from LOP where TenLop = @TenLop)
-				group by l.MaLop,l.TenLop	
-			)
-
+		end
+	return 
+end
 select *
 from dbo.Fn_TongSV_TenLop(N'Lớp K45HDDL')
 drop function Fn_TongSV_TenLop
 --12
-create function Fn_TongSV_Tinh(@NoiSinh nvarchar(250))
-returns table
-as
 
-	return (select noisinh,COUNT(MaSinhVien) as N'Tổng số sinh viên'
+create function Fn_TongSV_Tinh(@NoiSinh nvarchar(250))
+returns @thongkesv table(
+	noisinh nvarchar(250),
+	tong int
+	)
+as
+begin
+	if not exists (select 1 from SinhVien where NoiSinh = @NoiSinh)
+		begin	
+				insert into @thongkesv
+				select noisinh,COUNT(MaSinhVien) as N'Tổng số sinh viên'
+				from SINHVIEN 
+				group by noisinh
+		end
+	else
+		begin
+				insert into @thongkesv
+				select noisinh,COUNT(MaSinhVien) as N'Tổng số sinh viên'
 				from SINHVIEN 
 				where noisinh = @NoiSinh
 				group by noisinh
+		end
 
-			union all
-			select noisinh,COUNT(MaSinhVien) as N'Tổng số sinh viên'
-				from SINHVIEN 
-				where not exists (select 1 from SinhVien where NoiSinh = @NoiSinh)
-				group by noisinh
-			)
+	return
+	
+end		
 select *
-from dbo.Fn_TongSV_Tinh(N'Huếaaaa')
-
+from dbo.Fn_TongSV_Tinh(N'Huế')
 drop function Fn_TongSV_Tinh
 --13
-create function Fn_TongSV_NamSinh(@NamSinh int)
-returns table
-as
 
-	return (select ngaysinh,COUNT(MaSinhVien) as N'Tổng số sinh viên'
+create function Fn_TongSV_NamSinh(@NamSinh int)
+returns @thongkesv table(
+	namsinh int,
+	tong int
+	)
+as
+begin
+	if not exists (select 1 from SinhVien where year(ngaysinh) = @NamSinh)
+		begin	
+				insert into @thongkesv
+				select year(ngaysinh),COUNT(MaSinhVien) as N'Tổng số sinh viên'
+				from SINHVIEN
+				group by year(ngaysinh)
+		end
+	else
+		begin
+				insert into @thongkesv
+				select year(ngaysinh),COUNT(MaSinhVien) as N'Tổng số sinh viên'
 				from SINHVIEN 
 				where year(ngaysinh) = @NamSinh
-				group by ngaysinh
-
-			union all
-			select ngaysinh,COUNT(MaSinhVien) as N'Tổng số sinh viên'
-				from SINHVIEN 
-				where not exists (select 1 from SinhVien where year(ngaysinh) = @NamSinh)
-				group by ngaysinh
-			)
+				group by year(ngaysinh)
+		end
+		return
+end
 select *
-from dbo.Fn_TongSV_NamSinh(19921)
+from dbo.Fn_TongSV_NamSinh(1991)
 drop function Fn_TongSV_NamSinh
 --14 xem nội dung hàm
 exec sp_helptext Fn_TongSV_Lop
