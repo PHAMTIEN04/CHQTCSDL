@@ -239,3 +239,56 @@ drop function Fn_TongSV_Tinh
 --Nó trả về tất cả các hàng từ mỗi truy vấn mà không loại bỏ các bản sao, có nghĩa là nếu có các hàng giống nhau giữa các truy vấn, chúng sẽ được giữ lại trong kết quả.
 --UNION ALL: Giữ tất cả các kết quả, bao gồm cả các kết quả trùng lặp.
 --UNION: Chỉ giữ các kết quả duy nhất (loại bỏ các dòng trùng lặp).
+
+--16
+create function Fn_TongSV_NamSinh(@Tunam int ,@Dennam int)
+returns @thongkesv table(
+	namsinh int,
+	tong int
+	)
+as
+begin
+		if @Tunam > @Dennam 
+			return
+		declare @i int = @Tunam
+		while @i <= @Dennam
+			begin
+				declare @tt int
+				select @tt = COUNT(*)
+				from sinhvien
+				where year(ngaysinh) = @i
+				insert into @thongkesv(namsinh,tong) values(@i,@tt)
+				set @i = @i + 1
+			end
+		return
+end
+drop function dbo.Fn_TongSV_NamSinh
+select *
+from dbo.Fn_TongSV_Namsinh(2991,2004)
+--17
+create function Fn_TongSV_NamSinh_TenLop(@tenlop nvarchar(50),@Tunam int ,@Dennam int)
+returns @thongkesv table(
+	namsinh int,
+	tong int
+	)
+as
+begin
+		if @Tunam > @Dennam 
+			return
+		declare @i int = @Tunam
+		while @i <= @Dennam
+			begin
+				declare @tt int
+				select @tt = COUNT(*)
+				from LOP l left join SINHVIEN sv on l.MaLop = sv.MaLop
+				where year(sv.ngaysinh) = @i and l.TenLop like '%' + @tenlop + '%'
+				insert into @thongkesv(namsinh,tong) values(@i,@tt)
+				set @i = @i + 1
+			end
+		return
+end
+drop function dbo.Fn_TongSV_NamSinh_TenLop
+select *
+from dbo.Fn_TongSV_Namsinh_TenLop(N'Lớp K45HDDL',1991,2004)
+
+				
