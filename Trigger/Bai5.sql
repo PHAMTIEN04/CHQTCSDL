@@ -1,4 +1,4 @@
---1
+﻿--1
 create trigger Trg_Diemts_Insert on dbo.SinhVien
 for insert
 as
@@ -56,4 +56,56 @@ begin
 end
 
 delete from DIEMTS where MaSinhVien = 'DL01'
+--4
+exec sp_helptext trg_diemts_update
+--5 
+drop trigger trg_diemts_update
+--6
+alter table Lop
+add TongSoSinhVien int null
 
+update LOP
+set TongSoSinhVien= (select Count(*)
+					from SINHVIEN
+					where Lop.MaLop = SINHVIEN.MaLop)
+
+select * from LOP
+
+--7
+create trigger trg_SinhVien_Insert on dbo.SinhVien
+for insert
+as
+begin
+	
+		update LOP
+		set TongSoSinhVien= tongsosinhvien+(select Count(*)
+							from inserted
+							where Lop.MaLop = inserted.MaLop)
+
+end
+drop trigger trg_sinhvien_insert
+
+insert into SINHVIEN(MaSinhVien,MaLop,HoDem,Ten,NgaySinh,GioiTinh,NoiSinh)
+values('DL14','K45HDDL',N'Lê Văn',N'Luyện','2004-12-01',1,'Hue')
+
+select * from LOP
+select * from SINHVIEN
+
+--8
+
+create trigger trg_SinhVien_delete on dbo.SinhVien
+for delete
+as
+begin
+	
+		update LOP
+		set TongSoSinhVien= tongsosinhvien-(select Count(*)
+							from deleted
+							where Lop.MaLop = deleted.MaLop)
+
+end
+
+delete sinhvien
+where Masinhvien = N'DL13'
+select * from LOP
+select * from SINHVIEN

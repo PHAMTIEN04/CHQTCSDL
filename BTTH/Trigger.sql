@@ -89,3 +89,51 @@ exec sp_helptext Trg_update_phucap
 
 --D6
 drop trigger Trg_update_phucap
+
+--D7
+alter table PHONG
+add TongSoNhanVien int null
+
+update PHONG
+set TongSoNhanVien = (select count(*)
+					  from NHANVIEN
+					  where Phong.MaPhong = NHANVIEN.MaPhong)
+select * from PHONG
+
+select * from NHANVIEN
+
+--D8
+create trigger trg_NhanVien_Insert on dbo.NhanVien
+for insert
+as
+begin
+	update Phong
+	set TongSoNhanVien = tongsonhanvien+(select Count(*)
+						  from inserted
+						  where phong.MaPhong = inserted.MaPhong)
+
+end
+
+insert into NHANVIEN(MaNhanVien,HoDem,Ten,NgaySinh,GioiTinh,DiaChi,MaPhong,MaPhanXuong)
+values(N'1240210000',N'Trần',N'Tiến','2000-01-01',0,N'Huế',N'NV',N'A1')
+
+
+select * from NHANVIEN
+select * from PHONG
+
+--D9
+create trigger trg_NhanVien_Delete on dbo.NhanVien
+for delete
+as
+begin
+	update Phong
+	set TongSoNhanVien = tongsonhanvien-(select Count(*)
+						  from deleted
+						  where phong.MaPhong = deleted.MaPhong)
+
+end
+
+delete NHANVIEN
+where MaNhanVien = N'1240210001'
+select * from NHANVIEN
+select * from PHONG
