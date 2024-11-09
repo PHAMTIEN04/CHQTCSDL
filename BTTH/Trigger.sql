@@ -59,13 +59,13 @@ begin
 	select @hsl_moi = HeSo,@mnv = MaNhanVien
 	from inserted 
 	update THUNHAP_NV
-	set PhuCap = ( ( @hsl_moi- @hsl_cu ) * 100000)
+	set PhuCap =PhuCap+ ( ( @hsl_moi- @hsl_cu ) * 100000)
 	where HeSo = @hsl_moi
 end 
 select * from THUNHAP_NV
 update THUNHAP_NV
 set HeSo = 3.0
-where MaNhanVien = '1240210017'
+where MaNhanVien = '1240210000'
 drop trigger Trg_ThuNhap_Update_PhuCap
 
 --D4

@@ -132,3 +132,32 @@ exec sp_helptext Fn_Luong_NV
 
 --C11
 drop function Fn_Sonhanvien_Phong
+
+--4.17
+create Function Fn_TKTongSV_NamSinh_TenPhong(@maphong nvarchar(3),@tunam int,@dennam int)
+returns @thongke table(
+						namsinh int,
+						soluong int)
+as
+begin
+		if @tunam > @dennam
+			return
+		declare @i int = @tunam
+		while @i <= @dennam
+			begin
+				declare @tt int
+				select @tt = Count(*)
+				from NHANVIEN
+				where Year(ngaysinh) = @i and MaPhong = @maphong
+
+				insert into @thongke(namsinh,soluong) values(@i,@tt)
+				set @i = @i + 1
+			end
+
+		return
+end
+
+select *
+from dbo.fn_TKTONGSV_NAMSINH_TENPHONG(N'NV',1992,2000)
+
+select * from NHANVIEN where YEAR(ngaysinh) = 1993 and MaPhong = N'NV'

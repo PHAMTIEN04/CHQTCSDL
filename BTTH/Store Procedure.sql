@@ -157,3 +157,59 @@ exec sp_helptext Sp_Nhanvien_ThangSinh
 --B12
 
 drop proc Sp_Nhanvien_ThangSinh 
+--3.16
+alter proc proc_TK_SV_ThangSinh(@tuthang int,@denthang int)
+as
+begin
+	if (@TuThang > @DenThang or @TuThang < 1 or @TuThang > 12 or @DenThang < 1 or @DenThang > 12)
+		return
+	declare @tb table(thang int,
+						tong int
+						)
+	declare @i int = @tuthang
+	while @i <= @denthang
+		begin
+			declare @tt int
+			select @tt = Count(*)
+			from NhanVien
+			Where MONTH(ngaysinh) = @i
+
+			insert into @tb(thang,tong) values(@i,@tt)
+			set @i = @i + 1
+		end
+	select *
+	from @tb
+end
+
+exec proc_TK_SV_ThangSinh @tuthang= 1,@denthang=12
+
+select * from nhanvien
+
+--3.18
+create proc proc_TK_SV_NgaySinh_Lop(@tungay date,@denngay date,@maphong nvarchar(3))
+as
+begin
+	if @tungay > @denngay
+		return
+
+	declare @tb table (
+						ngay date,
+						tong int
+						)
+	declare @i date = @tungay
+	while @i <= @denngay
+		begin
+			declare @tt int
+			select @tt = Count(*)
+			from NHANVIEN
+			where NgaySinh = @i and MaPhong = @maphong
+
+			insert into @tb(ngay,tong) values(@i,@tt)
+			set @i = DATEADD(DAY,1,@i)
+		end
+	select *
+	from @tb
+
+end
+
+exec proc_TK_SV_NgaySinh_Lop @tungay='1997-11-17',@denngay='2000-01-01' ,@maphong=N'NV'
