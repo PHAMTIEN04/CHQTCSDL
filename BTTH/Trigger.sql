@@ -118,6 +118,7 @@ insert into NHANVIEN(MaNhanVien,HoDem,Ten,NgaySinh,GioiTinh,DiaChi,MaPhong,MaPha
 values(N'1240210000',N'Trần',N'Tiến','2000-01-01',0,N'Huế',N'NV',N'A1')
 
 
+
 select * from NHANVIEN
 select * from PHONG
 
