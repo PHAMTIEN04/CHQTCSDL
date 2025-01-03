@@ -19,19 +19,19 @@ insert Registration(ExamineeId,CertificateId)
 values(1,2)
 
 --b
-create trigger trg_Registration_Update on Registration
+alter trigger trg_Registration_Update on Registration
 for update
 as
 begin
 	update Certificate
 	set NumberOfPass = (select count(*)
-							from Registration
+							from inserted
 							where CertificateId = Certificate.CertificateId and ExamResult >= 5)
 
 end
 
 update Registration
-set ExamResult = 5
+set ExamResult = 4
 where ExamineeId = 1 and CertificateId =2
 
 --Câu 2
